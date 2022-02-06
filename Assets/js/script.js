@@ -1,17 +1,18 @@
-var cityInfo = $('#search-cities')
-var cities = []
-var apiKey = '58139323dd364a950f686c4f302aab39'
+var cityInfo = $('#search-cities');
+var cities = [];
+var apiKey = '58139323dd364a950f686c4f302aab39';
 
 //Format Day
 function formatDay(date){
     var date = new Date();
-    var month = date.getMonth()++;
+    var month = date.getMonth()+1;
     var day = date.getDate();
 
     var dateOut = date.getFullYear() + '/' + (month<10 ? '0' : '') + month + '/' +
     (day<10 ? '0' : '') + day;
     return dateOut;
 }
+console.log(formatDay)
 
 init();
 
@@ -19,14 +20,15 @@ function init(){
     //Get stored cities and parse json string to an object
     var stagedCities = JSON.parse(localStorage.getItem('cities'));
     if(stagedCities !== null){
-        cities = stagedCities
+        cities = stagedCities;
     } 
-    renderCities()
+    renderCities();
 }
 
 function stageCities(){
     localStorage.setItem('cities', json.stringify(cities))
 }
+console.log(stageCities)
 
 cityInfo.empty();
 function renderCities(){
@@ -34,31 +36,32 @@ function renderCities(){
     for (var i = 0; i < cities.length; i++) {
         var city = cities[i];
         
-        var li = $('<li>').text(city)
-        li.attr('id', 'listC')
-        li.attr('data-city', city)
-        li.attr('class', 'list-group-item')
+        var li = $('<li>').text(city);
+        li.attr('id', 'listC');
+        li.attr('data-city', city);
+        li.attr('class', 'list-group-item');
 
-        cityInfo.prepend(li)
+        cityInfo.prepend(li);
     }
     if(!city){
         return
     } else {
-        weatherResponse(city)
+        weatherResponse(city);
     }
-}
+};
+console.log(renderCities)
 
-$('#add-city').on('click', (event)=>{event.preventdefault()
+$('#add-city').on('click', (event)=>{event.preventdefault();
 
-var city = $('city-input').val().trim()
+var city = $('city-input').val().trim();
 
 if(city===''){
     return
 }
-cities.push(city)
+cities.push(city);
 
-renderCities()
-stageCities()
+renderCities();
+stageCities();
 });
 
 //get weather response
@@ -72,24 +75,24 @@ function weatherResponse(name){
         method: 'GET'
     })
     .then(function(){
-        title = $('<h3>').text(response.name+''+formatDay())
-        $('#today-weather').append(cityTitle)
+        title = $('<h3>').text(response.name+''+formatDay());
+        $('#today-weather').append(cityTitle);
 
-        var tempToNum = parseInt((response.main.temp)*9/5-459)
+        var tempToNum = parseInt((response.main.temp)*9/5-459);
 
-        var cityTemp = $('<p>').text('Temperature:'+ tempToNum + 'f')
-        $('today-weather').append(cityTemp)
+        var cityTemp = $('<p>').text('Temperature:'+ tempToNum + 'f');
+        $('today-weather').append(cityTemp);
 
-        var humidity = $('<p>').text('Humidity:'+ response.main.humidity + '%')
-        $('today-weather').append(humidity)
+        var humidity = $('<p>').text('Humidity:'+ response.main.humidity + '%');
+        $('today-weather').append(humidity);
 
-        var windSpeed = $('<p>').text('Wind Speed:' + response.wind.speed + 'mph')
-        $('today-weather').append(windSpeed)
+        var windSpeed = $('<p>').text('Wind Speed:' + response.wind.speed + 'mph');
+        $('today-weather').append(windSpeed);
 
-        var long = response.coord.lon
-        var lat = response.coord.lat
+        var long = response.coord.lon;
+        var lat = response.coord.lat;
 
-        var query2 = "https://api.openweathermap.org/data/2.5/uvi?appid="+ apiKey+ "&lat=" + lat +"&lon=" + long
+        var query2 = "https://api.openweathermap.org/data/2.5/uvi?appid="+ apiKey+ "&lat=" + lat +"&lon=" + long;
 
         $.ajax({
             url: query2,
@@ -97,12 +100,12 @@ function weatherResponse(name){
         })
         
         .then(function(resUV){
-            var UV = $('<span>').text(resUV.value)
-            var UVp = $('<p>').text("UVIndex:")
+            var UV = $('<span>').text(resUV.value);
+            var UVp = $('<p>').text("UVIndex:");
 
-            UVp.append(UV)
+            UVp.append(UV);
 
-            $('today-weather').append(UVp)
+            $('today-weather').append(UVp);
 
             if(resUV.value > 0 && resUV.value <=2){
                 UV.attr('class', 'green')
@@ -122,59 +125,60 @@ function weatherResponse(name){
 
         var query3 = "https://api.openweathermap.org/data/2.5/forecast?q=" + name + "&appid=" + apiKey;
         $.ajax({
-            url: queryURL3,
+            url: query3,
             method: "GET"
         })
 
         .then(function(res5day){
-            $('#5Forecast').empty()
+            $('#5Forecast').empty();
 
             for (var i = 0, j = 0; j < 5; i=i+6) {
                 var read = res5day.list[i].dt;
 
                 if(res5day.list[i].dt != res5day.list[i+1].dt){
-                    var div = $('<div>')
-                    div.attr('class','col-3 m-2 bg-primary')
+                    var div = $('<div>');
+                    div.attr('class','col-3 m-2 bg-primary');
 
-                    var d = new Date(0)
-                    d.setUTCSeconds(read)
+                    var d = new Date(0);
+                    d.setUTCSeconds(read);
 
-                    var date = d
-                    var month = date.getMonth()++
-                    var day = date.getDate()
-                    var dayOutPut = date.getFullYear() + "/" + (month<10 ? '0' : '') + month + '/' +
-                    (day<10 ? '0' : '') + day
+                    var date = d;
+                    var month = date.getMonth()+1;
+                    var day = date.getDate();
+                    var OutPut = date.getFullYear() + "/" + (month<10 ? '0' : '') + month + '/' +
+                    (day<10 ? '0' : '') + day;
 
-                    var h6 = $('<h6>').text('dayOutPut')
+                    var h6 = $('<h6>').text(OutPut);
 
-                    var image = $('<img>')
-                    var sky = res5day.list[i].weather[0].main
+                    var image = $('<img>');
+                    var sky = res5day.list[i].weather[0].main;
                     if(sky==="Clouds"){
                         image.attr("src", "https://img.icons8.com/color/48/000000/cloud.png")
                     } else if(sky==="Clear"){
                         image.attr("src", "https://img.icons8.com/color/48/000000/summer.png")
                     }else if(sky==="Rain"){
                         image.attr("src", "https://img.icons8.com/color/48/000000/rain.png")
-                    }
+                    };
 
-                    var pTempK = res5day.list[i].main.temp
-                    var tempToNum = parseInt((pTempK)*9/5-459)
-                    var pTemp = $('<p>').text('Temperature:'+ tempToNum + 'F')
-                    var pHumidity = $('<p>').text('Humidity:' + res5day.list[i].main.humidity + '%')
-                    div.append(h6)
-                    div.append(image)
-                    div.append(pTemp)
-                    div.append(pHumidity)
-                    $('#5Forecast').append(div)
+                    var pTempK = res5day.list[i].main.temp;
+                    var tempToNum = parseInt((pTempK)*9/5-459);
+                    var pTemp = $('<p>').text('Temperature:'+ tempToNum + 'F');
+                    var pHumidity = $('<p>').text('Humidity:' + res5day.list[i].main.humidity + '%');
+                    div.append(h6);
+                    div.append(image);
+                    div.append(pTemp);
+                    div.append(pHumidity);
+                    $('#5Forecast').append(div);
                     j++
                 }
                 
             }
-        })
-    })
+        });
+    });
 }
+console.log(weatherResponse)
 
 $(document).on('click', '#listC', function(){
     var thisCity = $(this).attr('data-city')
-    weatherResponse(thisCity)
+    weatherResponse(thisCity);
 })
