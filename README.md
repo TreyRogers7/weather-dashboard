@@ -14,6 +14,8 @@ You will be able to look up cities and get the current weather and a five day fo
 ### USAGE
 
 Type or click on city names to see a 5 day forecast for that city
+
+
     
 ### CONTRIBUTING
 
