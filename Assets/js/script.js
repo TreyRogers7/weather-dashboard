@@ -26,7 +26,7 @@ function init(){
 }
 
 function stageCities(){
-    localStorage.setItem('cities', json.stringify(cities))
+    localStorage.setItem('cities', JSON.stringify(cities))
 }
 console.log(stageCities)
 
@@ -36,12 +36,12 @@ function renderCities(){
     for (var i = 0; i < cities.length; i++) {
         var city = cities[i];
         
-        var li = $('<li>').text(city);
+        var li = $('<button>').text(city);
         li.attr('id', 'listC');
         li.attr('data-city', city);
         li.attr('class', 'list-group-item');
 
-        cityInfo.prepend(li);
+        $('#searchHistory').append(li);
     }
     if(!city){
         return
@@ -51,9 +51,10 @@ function renderCities(){
 };
 console.log(renderCities)
 
-$('#add-city').on('click', (event)=>{event.preventdefault();
+$('#searchBtn').on('click', (event)=>{
+    event.preventDefault();
 
-var city = $('city-input').val().trim();
+var city = $('#search-cities').val().trim();
 
 if(city===''){
     return
@@ -67,60 +68,68 @@ stageCities();
 //get weather response
 
 function weatherResponse(name){
-    var query = "https://api.openweathermap.org/data/2.5/weather?q=" +name+ "&appid=" + apiKey;
+    var query = "https://api.openweathermap.org/data/2.5/weather?q=" + name + "&appid=" + apiKey;
 
     $('#today-weather').empty()
     $.ajax({
         url: query,
         method: 'GET'
     })
-    .then(function(){
-        title = $('<h3>').text(response.name+''+formatDay());
-        $('#today-weather').append(cityTitle);
+    .then(function(response){
+        console.log(response)
+        title = $('<h3>').text(response.name + '' + formatDay());
+        $('#today-weather').append(title);
 
         var tempToNum = parseInt((response.main.temp)*9/5-459);
 
         var cityTemp = $('<p>').text('Temperature:'+ tempToNum + 'f');
-        $('today-weather').append(cityTemp);
+        $('#today-weather').append(cityTemp);
 
         var humidity = $('<p>').text('Humidity:'+ response.main.humidity + '%');
-        $('today-weather').append(humidity);
+        $('#today-weather').append(humidity);
 
         var windSpeed = $('<p>').text('Wind Speed:' + response.wind.speed + 'mph');
-        $('today-weather').append(windSpeed);
+        $('#today-weather').append(windSpeed);
 
         var long = response.coord.lon;
         var lat = response.coord.lat;
 
         var query2 = "https://api.openweathermap.org/data/2.5/uvi?appid="+ apiKey+ "&lat=" + lat +"&lon=" + long;
 
+        var oneCall = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&appid=${apiKey}`
+
         $.ajax({
-            url: query2,
+            url:oneCall,
             method: 'GET'
         })
         
-        .then(function(resUV){
-            var UV = $('<span>').text(resUV.value);
+        .then(function(oneCall){
+            console.log(oneCall)
+
+
+            var UV = $('<span>').text(oneCall.current.uvi);
             var UVp = $('<p>').text("UVIndex:");
 
             UVp.append(UV);
 
-            $('today-weather').append(UVp);
+            $('#today-weather').append(UVp);
 
-            if(resUV.value > 0 && resUV.value <=2){
+            if(oneCall.current.uvi > 0 && oneCall.current.uvi <=2){
                 UV.attr('class', 'green')
-            }else if (resUV.value > 2 && resUV.value <= 5){
+            }else if (oneCall.current.uvi > 2 && oneCall.current.uvi <= 5){
                 UV.attr("class","yellow")
             }
-            else if (resUV.value >5 && resUV.value <= 7){
+            else if (oneCall.current.uvi >5 && oneCall.current.uvi <= 7){
                 UV.attr("class","orange")
             }
-            else if (resUV.value >7 && resUV.value <= 10){
+            else if (oneCall.current.uvi >7 && oneCall.current.uvi <= 10){
                 UV.attr("class","red")
             }
             else{
                 UV.attr("class","purple")
             }
+
+            
         });
 
         var query3 = "https://api.openweathermap.org/data/2.5/forecast?q=" + name + "&appid=" + apiKey;
@@ -130,12 +139,12 @@ function weatherResponse(name){
         })
 
         .then(function(res5day){
-            $('#5Forecast').empty();
+            $('#fiveDay').empty();
 
-            for (var i = 0, j = 0; j < 5; i=i+6) {
+            for (let i = 4; i < res5day.list.length; i = i+8) {
                 var read = res5day.list[i].dt;
 
-                if(res5day.list[i].dt != res5day.list[i+1].dt){
+                
                     var div = $('<div>');
                     div.attr('class','col-3 m-2 bg-primary');
 
@@ -168,15 +177,11 @@ function weatherResponse(name){
                     div.append(image);
                     div.append(pTemp);
                     div.append(pHumidity);
-                    $('#5Forecast').append(div);
-                    j++
-                }
-                
+                    $('#fiveDay').append(div);
             }
         });
     });
 }
-console.log(weatherResponse)
 
 $(document).on('click', '#listC', function(){
     var thisCity = $(this).attr('data-city')
