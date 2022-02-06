@@ -14,8 +14,6 @@ You will be able to look up cities and get the current weather and a five day fo
 ### USAGE
 
 Type or click on city names to see a 5 day forecast for that city
-
-
     
 ### CONTRIBUTING
 
@@ -24,5 +22,7 @@ Richard (Trey) William Rogers III
     
 ### INFO
 GitHub: https://www.github.com/TreyRogers7
+
+video: https://watch.screencastify.com/v/8vmoqUpTXF8ZvFtXQpym
     
 Email Address: treyrogers073@gmail.com
